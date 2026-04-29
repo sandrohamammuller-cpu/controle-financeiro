@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#ffffff" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Finanças" />
   <title>Controle Financeiro</title>
   <link rel="manifest" href="manifest.json" />
@@ -65,6 +64,17 @@
     .btn-income:active { opacity:0.7; }
     .btn-expense { background:var(--expense-bg); color:var(--expense-dark); border:0.5px solid var(--expense-border); }
     .btn-expense:active { opacity:0.7; }
+    /* Backup */
+    .backup-card { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+    .backup-row { display:flex; gap:8px; }
+    .btn-export { flex:1; height:40px; border-radius:8px; background:var(--surface2); border:0.5px solid var(--border2); color:var(--text2); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-export:active { opacity:0.7; }
+    .btn-import { flex:1; height:40px; border-radius:8px; background:var(--blue-bg); border:0.5px solid var(--blue-border); color:var(--blue-dark); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-import:active { opacity:0.7; }
+    .backup-info { font-size:12px; color:var(--text3); text-align:center; line-height:1.5; }
+    .toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a18; color:#f0efea; font-size:13px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity 0.2s, transform 0.2s; pointer-events:none; z-index:999; white-space:nowrap; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    /* Chart */
     .chart-wrap { padding:10px 14px 14px; }
     .chart-tabs { display:flex; gap:6px; margin-bottom:12px; }
     .tab { background:none; border:0.5px solid var(--border2); border-radius:7px; padding:5px 14px; font-size:12px; cursor:pointer; color:var(--text2); font-family:inherit; }
@@ -76,6 +86,7 @@
     .cat-bar-fill { height:100%; border-radius:4px; transition:width 0.4s; }
     .cat-bar-val { font-size:12px; color:var(--text2); width:68px; text-align:right; flex-shrink:0; }
     .empty-chart { font-size:13px; color:var(--text3); padding:4px 0 2px; }
+    /* Transactions */
     .tx-item { border-top:0.5px solid var(--border); }
     .tx-item:first-child { border-top:none; }
     .tx-row { display:flex; align-items:center; gap:10px; padding:11px 14px; }
@@ -119,11 +130,13 @@
     </div>
   </div>
   <div class="content">
+
     <div class="metrics">
       <div class="metric"><div class="metric-label">Ganhos</div><div class="metric-value income" id="totalIncome">R$ 0</div></div>
       <div class="metric"><div class="metric-label">Gastos</div><div class="metric-value expense" id="totalExpense">R$ 0</div></div>
       <div class="metric"><div class="metric-label">Saldo</div><div class="metric-value" id="totalBalance">R$ 0</div></div>
     </div>
+
     <div class="card">
       <div class="card-header">Nova transação</div>
       <div class="add-form">
@@ -152,6 +165,19 @@
         </div>
       </div>
     </div>
+
+    <div class="card">
+      <div class="card-header">Backup dos dados</div>
+      <div class="backup-card">
+        <div class="backup-row">
+          <button class="btn-export" onclick="exportBackup()">⬇ Exportar backup</button>
+          <button class="btn-import" onclick="document.getElementById('importFile').click()">⬆ Importar backup</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)" />
+        <p class="backup-info" id="backupInfo">Faça backup regularmente para não perder seus dados.</p>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header" style="padding-bottom:0;">Por categoria</div>
       <div class="chart-wrap">
@@ -162,27 +188,112 @@
         <div class="cat-bars" id="catBars"></div>
       </div>
     </div>
+
     <div class="card">
       <div class="card-header" style="padding-bottom:2px;">Transações</div>
       <div id="txList"></div>
     </div>
+
     <div class="safe-bottom"></div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const CATS=['Salário','Freelance','Investimento','Outros ganhos','Alimentação','Moradia','Transporte','Saúde','Lazer','Educação','Assinaturas','Outros gastos'];
 const CAT_COLORS={'Alimentação':'#1D9E75','Moradia':'#185FA5','Transporte':'#BA7517','Saúde':'#A32D2D','Lazer':'#993556','Educação':'#534AB7','Assinaturas':'#3B6D11','Outros gastos':'#5F5E5A','Salário':'#1D9E75','Freelance':'#185FA5','Investimento':'#BA7517','Outros ganhos':'#534AB7'};
+
 const now=new Date();
-let curYear=now.getFullYear(),curMonth=now.getMonth();
+let curYear=now.getFullYear(), curMonth=now.getMonth();
 let allTx=JSON.parse(localStorage.getItem('fin_tx')||'[]');
-let chartTab='expense',editingId=null;
+let chartTab='expense', editingId=null;
+
 document.getElementById('txDay').value=now.getDate();
-function save(){try{localStorage.setItem('fin_tx',JSON.stringify(allTx));}catch(e){}}
-function fmt(n){return'R$\u00a0'+n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
-function changeMonth(d){curMonth+=d;if(curMonth<0){curMonth=11;curYear--;}if(curMonth>11){curMonth=0;curYear++;}editingId=null;render();}
-function flashRed(id){const el=document.getElementById(id);if(!el)return;el.style.borderColor='#D85A30';el.focus();setTimeout(()=>el.style.borderColor='',1400);}
+updateBackupInfo();
+
+function save(){ try{ localStorage.setItem('fin_tx',JSON.stringify(allTx)); }catch(e){} }
+function fmt(n){ return 'R$\u00a0'+n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function updateBackupInfo(){
+  const el=document.getElementById('backupInfo');
+  if(!el) return;
+  const total=allTx.length;
+  const lastBackup=localStorage.getItem('fin_last_backup');
+  if(lastBackup){
+    const d=new Date(parseInt(lastBackup));
+    el.textContent=`${total} transação(ões) salvas. Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`;
+  } else {
+    el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda — exporte para não perder seus dados.`:'Faça backup regularmente para não perder seus dados.';
+  }
+}
+
+function exportBackup(){
+  if(allTx.length===0){ showToast('Nenhuma transação para exportar.'); return; }
+  const data={ version:1, exportedAt: new Date().toISOString(), transactions: allTx };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const dateStr=new Date().toISOString().slice(0,10);
+  a.href=url; a.download=`financas-backup-${dateStr}.json`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  localStorage.setItem('fin_last_backup', Date.now().toString());
+  updateBackupInfo();
+  showToast('✓ Backup exportado com sucesso!');
+}
+
+function importBackup(event){
+  const file=event.target.files[0];
+  if(!file){ return; }
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      let imported=[];
+      if(Array.isArray(data)){ imported=data; }
+      else if(data.transactions && Array.isArray(data.transactions)){ imported=data.transactions; }
+      else{ showToast('❌ Arquivo inválido.'); return; }
+      if(imported.length===0){ showToast('Arquivo vazio, nenhum dado importado.'); return; }
+      const confirmMsg=`Importar ${imported.length} transação(ões)?\n\nIsso vai SUBSTITUIR todos os dados atuais.`;
+      if(!confirm(confirmMsg)){ return; }
+      allTx=imported;
+      save();
+      editingId=null;
+      updateBackupInfo();
+      render();
+      showToast(`✓ ${imported.length} transações importadas!`);
+    } catch(err){
+      showToast('❌ Erro ao ler o arquivo.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value='';
+}
+
+function changeMonth(d){
+  curMonth+=d;
+  if(curMonth<0){curMonth=11;curYear--;}
+  if(curMonth>11){curMonth=0;curYear++;}
+  editingId=null; render();
+}
+
+function flashRed(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.style.borderColor='#D85A30'; el.focus();
+  setTimeout(()=>el.style.borderColor='',1400);
+}
+
 function addTx(type){
   const desc=document.getElementById('txDesc').value.trim();
   const amount=parseFloat(document.getElementById('txAmount').value);
@@ -192,10 +303,25 @@ function addTx(type){
   if(!amount||amount<=0){flashRed('txAmount');return;}
   if(!dayVal||dayVal<1||dayVal>daysInMonth(curYear,curMonth)){flashRed('txDay');return;}
   allTx.push({id:Date.now(),type,desc,amount,cat,year:curYear,month:curMonth,day:dayVal});
-  save();document.getElementById('txDesc').value='';document.getElementById('txAmount').value='';render();
+  save();
+  document.getElementById('txDesc').value='';
+  document.getElementById('txAmount').value='';
+  updateBackupInfo();
+  render();
 }
-function delTx(id){if(editingId===id)editingId=null;allTx=allTx.filter(t=>t.id!==id);save();render();}
-function toggleEdit(id){editingId=(editingId===id)?null:id;render();if(editingId)setTimeout(()=>{const el=document.getElementById('edit-desc-'+id);if(el)el.focus();},50);}
+
+function delTx(id){
+  if(editingId===id)editingId=null;
+  allTx=allTx.filter(t=>t.id!==id);
+  save(); updateBackupInfo(); render();
+}
+
+function toggleEdit(id){
+  editingId=(editingId===id)?null:id;
+  render();
+  if(editingId)setTimeout(()=>{const el=document.getElementById('edit-desc-'+id);if(el)el.focus();},50);
+}
+
 function saveTx(id){
   const desc=document.getElementById('edit-desc-'+id).value.trim();
   const amount=parseFloat(document.getElementById('edit-amount-'+id).value);
@@ -204,12 +330,13 @@ function saveTx(id){
   if(!desc||!amount||amount<=0||!dayVal||dayVal<1||dayVal>daysInMonth(curYear,curMonth))return;
   const tx=allTx.find(t=>t.id===id);
   if(tx){tx.desc=desc;tx.amount=amount;tx.day=dayVal;tx.cat=cat;}
-  save();editingId=null;render();
+  save(); editingId=null; render();
 }
-function monthTx(){return allTx.filter(t=>t.year===curYear&&t.month===curMonth);}
-function catOptions(selected){return CATS.map(c=>`<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join('');}
-function setChartTab(tab,btn){chartTab=tab;document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart();}
-function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function monthTx(){ return allTx.filter(t=>t.year===curYear&&t.month===curMonth); }
+function catOptions(selected){ return CATS.map(c=>`<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join(''); }
+function setChartTab(tab,btn){ chartTab=tab; document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderChart(); }
+
 function render(){
   document.getElementById('monthLabel').textContent=MONTHS[curMonth]+' '+curYear;
   const txs=monthTx();
@@ -221,8 +348,9 @@ function render(){
   const balEl=document.getElementById('totalBalance');
   balEl.textContent=fmt(balance);
   balEl.className='metric-value '+(balance>=0?'pos':'neg');
-  renderList(txs);renderChart();
+  renderList(txs); renderChart();
 }
+
 function renderList(txs){
   const el=document.getElementById('txList');
   const sorted=[...txs].sort((a,b)=>a.day-b.day||b.id-a.id);
@@ -260,6 +388,7 @@ function renderList(txs){
     </div>`;
   }).join('');
 }
+
 function renderChart(){
   const txs=monthTx().filter(t=>t.type===chartTab);
   const cats={};
@@ -278,7 +407,8 @@ function renderChart(){
     </div>`;
   }).join('');
 }
-if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+
+if('serviceWorker'in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 render();
 </script>
 </body>
