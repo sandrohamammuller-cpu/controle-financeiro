@@ -18,7 +18,7 @@
       --income:#1D9E75; --income-bg:#E1F5EE; --income-border:#5DCAA5; --income-dark:#0F6E56;
       --expense:#D85A30; --expense-bg:#FAECE7; --expense-border:#F0997B; --expense-dark:#993C1D;
       --blue:#185FA5; --blue-bg:#E6F1FB; --blue-border:#85B7EB; --blue-dark:#0C447C;
-      --radius:10px; --radius-lg:14px;
+      --radius:10px; --radius-lg:14px; --max:480px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -28,15 +28,37 @@
         --income-bg:#0a2e20; --expense-bg:#2e1408; --blue-bg:#0a1e33;
       }
     }
-    html, body { height:100%; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
-    .app { max-width:480px; margin:0 auto; min-height:100%; display:flex; flex-direction:column; }
-    .header { background:var(--surface); border-bottom:0.5px solid var(--border); padding:16px 16px 12px; position:sticky; top:0; z-index:10; }
+    html, body {
+      height:100%;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;
+    }
+    body { display:flex; justify-content:center; }
+    .app {
+      width:100%; max-width:var(--max);
+      min-height:100%; display:flex; flex-direction:column;
+      overflow:hidden;
+    }
+    /* HEADER — mesma largura que o conteúdo */
+    .header {
+      width:100%; max-width:var(--max);
+      background:var(--surface); border-bottom:0.5px solid var(--border);
+      padding:16px 16px 12px;
+      position:sticky; top:0; z-index:10;
+    }
     .app-title { font-size:13px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
     .month-nav { display:flex; align-items:center; gap:12px; }
-    .month-nav button { background:none; border:0.5px solid var(--border2); border-radius:8px; width:36px; height:36px; font-size:18px; cursor:pointer; color:var(--text); display:flex; align-items:center; justify-content:center; }
+    .month-nav button {
+      background:none; border:0.5px solid var(--border2); border-radius:8px;
+      width:36px; height:36px; font-size:18px; cursor:pointer; color:var(--text);
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
     .month-nav button:active { opacity:0.6; }
     .month-label { flex:1; text-align:center; font-size:18px; font-weight:600; color:var(--text); }
+
     .content { flex:1; padding:16px; display:flex; flex-direction:column; gap:16px; }
+
+    /* METRICS */
     .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
     .metric { background:var(--surface); border-radius:var(--radius); padding:12px 10px; border:0.5px solid var(--border); }
     .metric-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
@@ -45,36 +67,61 @@
     .metric-value.expense { color:var(--expense); }
     .metric-value.pos { color:var(--income); }
     .metric-value.neg { color:var(--expense); }
+
+    /* CARDS */
     .card { background:var(--surface); border-radius:var(--radius-lg); border:0.5px solid var(--border); overflow:hidden; }
     .card-header { padding:12px 14px 0; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.05em; }
+
+    /* ADD FORM */
     .add-form { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
-    .form-row { display:flex; gap:8px; }
-    .form-row input,.form-row select,.add-form input,.add-form select {
-      flex:1; height:40px; border-radius:8px; border:0.5px solid var(--border2);
-      background:var(--surface2); color:var(--text); padding:0 12px; font-size:15px;
+    .form-row { display:flex; gap:8px; align-items:stretch; }
+    .form-row input, .form-row select,
+    .add-form input, .add-form select {
+      flex:1; min-width:0; height:40px; border-radius:8px;
+      border:0.5px solid var(--border2); background:var(--surface2);
+      color:var(--text); padding:0 12px; font-size:15px;
       font-family:inherit; -webkit-appearance:none; appearance:none; width:100%;
     }
-    .form-row input:focus,.add-form input:focus,.form-row select:focus,.add-form select:focus { outline:none; border-color:var(--blue); }
+    .form-row input:focus, .add-form input:focus,
+    .form-row select:focus, .add-form select:focus { outline:none; border-color:var(--blue); }
     input[type=number] { -moz-appearance:textfield; }
     input[type=number]::-webkit-inner-spin-button { display:none; }
-    .input-day { max-width:80px; flex:none; }
+    .input-day { width:72px; flex:none; text-align:center; padding:0 8px; }
     .btn-row { display:flex; gap:8px; }
-    .btn-income,.btn-expense { flex:1; height:44px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
+    .btn-income, .btn-expense {
+      flex:1; height:44px; border-radius:10px; font-size:15px;
+      font-weight:600; cursor:pointer; font-family:inherit;
+    }
     .btn-income { background:var(--income-bg); color:var(--income-dark); border:0.5px solid var(--income-border); }
     .btn-income:active { opacity:0.7; }
     .btn-expense { background:var(--expense-bg); color:var(--expense-dark); border:0.5px solid var(--expense-border); }
     .btn-expense:active { opacity:0.7; }
-    /* Backup */
+
+    /* BACKUP */
     .backup-card { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
     .backup-row { display:flex; gap:8px; }
-    .btn-export { flex:1; height:40px; border-radius:8px; background:var(--surface2); border:0.5px solid var(--border2); color:var(--text2); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-export, .btn-import {
+      flex:1; height:40px; border-radius:8px; font-size:13px; font-weight:600;
+      cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .btn-export { background:var(--surface2); border:0.5px solid var(--border2); color:var(--text2); }
     .btn-export:active { opacity:0.7; }
-    .btn-import { flex:1; height:40px; border-radius:8px; background:var(--blue-bg); border:0.5px solid var(--blue-border); color:var(--blue-dark); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-import { background:var(--blue-bg); border:0.5px solid var(--blue-border); color:var(--blue-dark); }
     .btn-import:active { opacity:0.7; }
     .backup-info { font-size:12px; color:var(--text3); text-align:center; line-height:1.5; }
-    .toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a18; color:#f0efea; font-size:13px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity 0.2s, transform 0.2s; pointer-events:none; z-index:999; white-space:nowrap; }
+
+    /* TOAST */
+    .toast {
+      position:fixed; bottom:calc(24px + env(safe-area-inset-bottom,0px));
+      left:50%; transform:translateX(-50%) translateY(20px);
+      background:#1a1a18; color:#f0efea; font-size:13px;
+      padding:10px 20px; border-radius:20px;
+      opacity:0; transition:opacity 0.2s, transform 0.2s;
+      pointer-events:none; z-index:999; white-space:nowrap;
+    }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    /* Chart */
+
+    /* CHART */
     .chart-wrap { padding:10px 14px 14px; }
     .chart-tabs { display:flex; gap:6px; margin-bottom:12px; }
     .tab { background:none; border:0.5px solid var(--border2); border-radius:7px; padding:5px 14px; font-size:12px; cursor:pointer; color:var(--text2); font-family:inherit; }
@@ -86,7 +133,8 @@
     .cat-bar-fill { height:100%; border-radius:4px; transition:width 0.4s; }
     .cat-bar-val { font-size:12px; color:var(--text2); width:68px; text-align:right; flex-shrink:0; }
     .empty-chart { font-size:13px; color:var(--text3); padding:4px 0 2px; }
-    /* Transactions */
+
+    /* TRANSACTIONS */
     .tx-item { border-top:0.5px solid var(--border); }
     .tx-item:first-child { border-top:none; }
     .tx-row { display:flex; align-items:center; gap:10px; padding:11px 14px; }
@@ -106,12 +154,13 @@
     .btn-icon:active { background:var(--surface2); }
     .edit-panel { display:none; padding:10px 14px 14px; background:var(--surface2); border-top:0.5px solid var(--border); }
     .edit-panel.open { display:block; }
-    .edit-panel input,.edit-panel select {
-      flex:1; height:38px; border-radius:8px; border:0.5px solid var(--border2);
-      background:var(--surface); color:var(--text); padding:0 10px; font-size:14px;
+    .edit-panel input, .edit-panel select {
+      flex:1; min-width:0; height:38px; border-radius:8px;
+      border:0.5px solid var(--border2); background:var(--surface);
+      color:var(--text); padding:0 10px; font-size:14px;
       font-family:inherit; -webkit-appearance:none; appearance:none; width:100%;
     }
-    .edit-panel input:focus,.edit-panel select:focus { outline:none; border-color:var(--blue); }
+    .edit-panel input:focus, .edit-panel select:focus { outline:none; border-color:var(--blue); }
     .edit-btn-row { display:flex; gap:8px; margin-top:8px; }
     .btn-save { flex:1; height:38px; border-radius:8px; background:var(--blue-bg); border:0.5px solid var(--blue-border); color:var(--blue-dark); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
     .btn-cancel { height:38px; padding:0 16px; border-radius:8px; background:none; border:0.5px solid var(--border2); color:var(--text2); font-size:14px; cursor:pointer; font-family:inherit; }
@@ -129,8 +178,8 @@
       <button onclick="changeMonth(1)">&#8250;</button>
     </div>
   </div>
-  <div class="content">
 
+  <div class="content">
     <div class="metrics">
       <div class="metric"><div class="metric-label">Ganhos</div><div class="metric-value income" id="totalIncome">R$ 0</div></div>
       <div class="metric"><div class="metric-label">Gastos</div><div class="metric-value expense" id="totalExpense">R$ 0</div></div>
@@ -226,55 +275,48 @@ function showToast(msg){
 
 function updateBackupInfo(){
   const el=document.getElementById('backupInfo');
-  if(!el) return;
+  if(!el)return;
   const total=allTx.length;
   const lastBackup=localStorage.getItem('fin_last_backup');
   if(lastBackup){
     const d=new Date(parseInt(lastBackup));
     el.textContent=`${total} transação(ões) salvas. Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`;
   } else {
-    el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda — exporte para não perder seus dados.`:'Faça backup regularmente para não perder seus dados.';
+    el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda.`:'Faça backup regularmente para não perder seus dados.';
   }
 }
 
 function exportBackup(){
   if(allTx.length===0){ showToast('Nenhuma transação para exportar.'); return; }
-  const data={ version:1, exportedAt: new Date().toISOString(), transactions: allTx };
+  const data={ version:1, exportedAt:new Date().toISOString(), transactions:allTx };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  const dateStr=new Date().toISOString().slice(0,10);
-  a.href=url; a.download=`financas-backup-${dateStr}.json`;
+  a.href=url; a.download=`financas-backup-${new Date().toISOString().slice(0,10)}.json`;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
-  localStorage.setItem('fin_last_backup', Date.now().toString());
+  localStorage.setItem('fin_last_backup',Date.now().toString());
   updateBackupInfo();
   showToast('✓ Backup exportado com sucesso!');
 }
 
 function importBackup(event){
   const file=event.target.files[0];
-  if(!file){ return; }
+  if(!file)return;
   const reader=new FileReader();
   reader.onload=function(e){
     try{
       const data=JSON.parse(e.target.result);
       let imported=[];
       if(Array.isArray(data)){ imported=data; }
-      else if(data.transactions && Array.isArray(data.transactions)){ imported=data.transactions; }
+      else if(data.transactions&&Array.isArray(data.transactions)){ imported=data.transactions; }
       else{ showToast('❌ Arquivo inválido.'); return; }
-      if(imported.length===0){ showToast('Arquivo vazio, nenhum dado importado.'); return; }
-      const confirmMsg=`Importar ${imported.length} transação(ões)?\n\nIsso vai SUBSTITUIR todos os dados atuais.`;
-      if(!confirm(confirmMsg)){ return; }
-      allTx=imported;
-      save();
-      editingId=null;
-      updateBackupInfo();
-      render();
+      if(imported.length===0){ showToast('Arquivo vazio.'); return; }
+      if(!confirm(`Importar ${imported.length} transação(ões)?\nIsso vai SUBSTITUIR todos os dados atuais.`))return;
+      allTx=imported; save(); editingId=null;
+      updateBackupInfo(); render();
       showToast(`✓ ${imported.length} transações importadas!`);
-    } catch(err){
-      showToast('❌ Erro ao ler o arquivo.');
-    }
+    }catch(err){ showToast('❌ Erro ao ler o arquivo.'); }
   };
   reader.readAsText(file);
   event.target.value='';
@@ -306,8 +348,7 @@ function addTx(type){
   save();
   document.getElementById('txDesc').value='';
   document.getElementById('txAmount').value='';
-  updateBackupInfo();
-  render();
+  updateBackupInfo(); render();
 }
 
 function delTx(id){
@@ -346,8 +387,7 @@ function render(){
   document.getElementById('totalIncome').textContent=fmt(income);
   document.getElementById('totalExpense').textContent=fmt(expense);
   const balEl=document.getElementById('totalBalance');
-  balEl.textContent=fmt(balance);
-  balEl.className='metric-value '+(balance>=0?'pos':'neg');
+  balEl.textContent=fmt(balance); balEl.className='metric-value '+(balance>=0?'pos':'neg');
   renderList(txs); renderChart();
 }
 
