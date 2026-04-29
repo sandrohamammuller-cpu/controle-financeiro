@@ -28,23 +28,26 @@
         --income-bg:#0a2e20; --expense-bg:#2e1408; --blue-bg:#0a1e33;
       }
     }
-    html, body {
-      height:100%;
+    html { height:100%; }
+    body {
+      min-height:100%;
       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;
+      display:flex; flex-direction:column; align-items:center;
+      margin:0; padding:0;
     }
-    body { display:flex; justify-content:center; }
     .app {
       width:100%; max-width:var(--max);
-      min-height:100%; display:flex; flex-direction:column;
-      overflow:hidden;
+      min-height:100vh;
+      display:flex; flex-direction:column;
     }
-    /* HEADER — mesma largura que o conteúdo */
+    /* HEADER — contido dentro do .app, mesma largura */
     .header {
-      width:100%; max-width:var(--max);
-      background:var(--surface); border-bottom:0.5px solid var(--border);
+      background:var(--surface);
+      border-bottom:0.5px solid var(--border);
       padding:16px 16px 12px;
       position:sticky; top:0; z-index:10;
+      width:100%;
     }
     .app-title { font-size:13px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
     .month-nav { display:flex; align-items:center; gap:12px; }
@@ -58,7 +61,6 @@
 
     .content { flex:1; padding:16px; display:flex; flex-direction:column; gap:16px; }
 
-    /* METRICS */
     .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
     .metric { background:var(--surface); border-radius:var(--radius); padding:12px 10px; border:0.5px solid var(--border); }
     .metric-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
@@ -68,11 +70,9 @@
     .metric-value.pos { color:var(--income); }
     .metric-value.neg { color:var(--expense); }
 
-    /* CARDS */
     .card { background:var(--surface); border-radius:var(--radius-lg); border:0.5px solid var(--border); overflow:hidden; }
     .card-header { padding:12px 14px 0; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.05em; }
 
-    /* ADD FORM */
     .add-form { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
     .form-row { display:flex; gap:8px; align-items:stretch; }
     .form-row input, .form-row select,
@@ -88,40 +88,24 @@
     input[type=number]::-webkit-inner-spin-button { display:none; }
     .input-day { width:72px; flex:none; text-align:center; padding:0 8px; }
     .btn-row { display:flex; gap:8px; }
-    .btn-income, .btn-expense {
-      flex:1; height:44px; border-radius:10px; font-size:15px;
-      font-weight:600; cursor:pointer; font-family:inherit;
-    }
+    .btn-income, .btn-expense { flex:1; height:44px; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; }
     .btn-income { background:var(--income-bg); color:var(--income-dark); border:0.5px solid var(--income-border); }
     .btn-income:active { opacity:0.7; }
     .btn-expense { background:var(--expense-bg); color:var(--expense-dark); border:0.5px solid var(--expense-border); }
     .btn-expense:active { opacity:0.7; }
 
-    /* BACKUP */
     .backup-card { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
     .backup-row { display:flex; gap:8px; }
-    .btn-export, .btn-import {
-      flex:1; height:40px; border-radius:8px; font-size:13px; font-weight:600;
-      cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px;
-    }
+    .btn-export, .btn-import { flex:1; height:40px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
     .btn-export { background:var(--surface2); border:0.5px solid var(--border2); color:var(--text2); }
     .btn-export:active { opacity:0.7; }
     .btn-import { background:var(--blue-bg); border:0.5px solid var(--blue-border); color:var(--blue-dark); }
     .btn-import:active { opacity:0.7; }
     .backup-info { font-size:12px; color:var(--text3); text-align:center; line-height:1.5; }
 
-    /* TOAST */
-    .toast {
-      position:fixed; bottom:calc(24px + env(safe-area-inset-bottom,0px));
-      left:50%; transform:translateX(-50%) translateY(20px);
-      background:#1a1a18; color:#f0efea; font-size:13px;
-      padding:10px 20px; border-radius:20px;
-      opacity:0; transition:opacity 0.2s, transform 0.2s;
-      pointer-events:none; z-index:999; white-space:nowrap;
-    }
+    .toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a18; color:#f0efea; font-size:13px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity 0.2s,transform 0.2s; pointer-events:none; z-index:999; white-space:nowrap; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    /* CHART */
     .chart-wrap { padding:10px 14px 14px; }
     .chart-tabs { display:flex; gap:6px; margin-bottom:12px; }
     .tab { background:none; border:0.5px solid var(--border2); border-radius:7px; padding:5px 14px; font-size:12px; cursor:pointer; color:var(--text2); font-family:inherit; }
@@ -134,7 +118,6 @@
     .cat-bar-val { font-size:12px; color:var(--text2); width:68px; text-align:right; flex-shrink:0; }
     .empty-chart { font-size:13px; color:var(--text3); padding:4px 0 2px; }
 
-    /* TRANSACTIONS */
     .tx-item { border-top:0.5px solid var(--border); }
     .tx-item:first-child { border-top:none; }
     .tx-row { display:flex; align-items:center; gap:10px; padding:11px 14px; }
@@ -154,12 +137,7 @@
     .btn-icon:active { background:var(--surface2); }
     .edit-panel { display:none; padding:10px 14px 14px; background:var(--surface2); border-top:0.5px solid var(--border); }
     .edit-panel.open { display:block; }
-    .edit-panel input, .edit-panel select {
-      flex:1; min-width:0; height:38px; border-radius:8px;
-      border:0.5px solid var(--border2); background:var(--surface);
-      color:var(--text); padding:0 10px; font-size:14px;
-      font-family:inherit; -webkit-appearance:none; appearance:none; width:100%;
-    }
+    .edit-panel input, .edit-panel select { flex:1; min-width:0; height:38px; border-radius:8px; border:0.5px solid var(--border2); background:var(--surface); color:var(--text); padding:0 10px; font-size:14px; font-family:inherit; -webkit-appearance:none; appearance:none; width:100%; }
     .edit-panel input:focus, .edit-panel select:focus { outline:none; border-color:var(--blue); }
     .edit-btn-row { display:flex; gap:8px; margin-top:8px; }
     .btn-save { flex:1; height:38px; border-radius:8px; background:var(--blue-bg); border:0.5px solid var(--blue-border); color:var(--blue-dark); font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
@@ -246,19 +224,16 @@
     <div class="safe-bottom"></div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const CATS=['Salário','Freelance','Investimento','Outros ganhos','Alimentação','Moradia','Transporte','Saúde','Lazer','Educação','Assinaturas','Outros gastos'];
 const CAT_COLORS={'Alimentação':'#1D9E75','Moradia':'#185FA5','Transporte':'#BA7517','Saúde':'#A32D2D','Lazer':'#993556','Educação':'#534AB7','Assinaturas':'#3B6D11','Outros gastos':'#5F5E5A','Salário':'#1D9E75','Freelance':'#185FA5','Investimento':'#BA7517','Outros ganhos':'#534AB7'};
-
 const now=new Date();
 let curYear=now.getFullYear(), curMonth=now.getMonth();
 let allTx=JSON.parse(localStorage.getItem('fin_tx')||'[]');
 let chartTab='expense', editingId=null;
-
 document.getElementById('txDay').value=now.getDate();
 updateBackupInfo();
 
@@ -267,23 +242,14 @@ function fmt(n){ return 'R$\u00a0'+n.toLocaleString('pt-BR',{minimumFractionDigi
 function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
-}
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
 function updateBackupInfo(){
-  const el=document.getElementById('backupInfo');
-  if(!el)return;
+  const el=document.getElementById('backupInfo'); if(!el)return;
   const total=allTx.length;
   const lastBackup=localStorage.getItem('fin_last_backup');
-  if(lastBackup){
-    const d=new Date(parseInt(lastBackup));
-    el.textContent=`${total} transação(ões) salvas. Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`;
-  } else {
-    el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda.`:'Faça backup regularmente para não perder seus dados.';
-  }
+  if(lastBackup){ const d=new Date(parseInt(lastBackup)); el.textContent=`${total} transação(ões) salvas. Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`; }
+  else{ el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda.`:'Faça backup regularmente para não perder seus dados.'; }
 }
 
 function exportBackup(){
@@ -293,16 +259,13 @@ function exportBackup(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url; a.download=`financas-backup-${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   localStorage.setItem('fin_last_backup',Date.now().toString());
-  updateBackupInfo();
-  showToast('✓ Backup exportado com sucesso!');
+  updateBackupInfo(); showToast('✓ Backup exportado com sucesso!');
 }
 
 function importBackup(event){
-  const file=event.target.files[0];
-  if(!file)return;
+  const file=event.target.files[0]; if(!file)return;
   const reader=new FileReader();
   reader.onload=function(e){
     try{
@@ -313,28 +276,15 @@ function importBackup(event){
       else{ showToast('❌ Arquivo inválido.'); return; }
       if(imported.length===0){ showToast('Arquivo vazio.'); return; }
       if(!confirm(`Importar ${imported.length} transação(ões)?\nIsso vai SUBSTITUIR todos os dados atuais.`))return;
-      allTx=imported; save(); editingId=null;
-      updateBackupInfo(); render();
+      allTx=imported; save(); editingId=null; updateBackupInfo(); render();
       showToast(`✓ ${imported.length} transações importadas!`);
     }catch(err){ showToast('❌ Erro ao ler o arquivo.'); }
   };
-  reader.readAsText(file);
-  event.target.value='';
+  reader.readAsText(file); event.target.value='';
 }
 
-function changeMonth(d){
-  curMonth+=d;
-  if(curMonth<0){curMonth=11;curYear--;}
-  if(curMonth>11){curMonth=0;curYear++;}
-  editingId=null; render();
-}
-
-function flashRed(id){
-  const el=document.getElementById(id);
-  if(!el)return;
-  el.style.borderColor='#D85A30'; el.focus();
-  setTimeout(()=>el.style.borderColor='',1400);
-}
+function changeMonth(d){ curMonth+=d; if(curMonth<0){curMonth=11;curYear--;} if(curMonth>11){curMonth=0;curYear++;} editingId=null; render(); }
+function flashRed(id){ const el=document.getElementById(id); if(!el)return; el.style.borderColor='#D85A30'; el.focus(); setTimeout(()=>el.style.borderColor='',1400); }
 
 function addTx(type){
   const desc=document.getElementById('txDesc').value.trim();
@@ -345,23 +295,12 @@ function addTx(type){
   if(!amount||amount<=0){flashRed('txAmount');return;}
   if(!dayVal||dayVal<1||dayVal>daysInMonth(curYear,curMonth)){flashRed('txDay');return;}
   allTx.push({id:Date.now(),type,desc,amount,cat,year:curYear,month:curMonth,day:dayVal});
-  save();
-  document.getElementById('txDesc').value='';
-  document.getElementById('txAmount').value='';
+  save(); document.getElementById('txDesc').value=''; document.getElementById('txAmount').value='';
   updateBackupInfo(); render();
 }
 
-function delTx(id){
-  if(editingId===id)editingId=null;
-  allTx=allTx.filter(t=>t.id!==id);
-  save(); updateBackupInfo(); render();
-}
-
-function toggleEdit(id){
-  editingId=(editingId===id)?null:id;
-  render();
-  if(editingId)setTimeout(()=>{const el=document.getElementById('edit-desc-'+id);if(el)el.focus();},50);
-}
+function delTx(id){ if(editingId===id)editingId=null; allTx=allTx.filter(t=>t.id!==id); save(); updateBackupInfo(); render(); }
+function toggleEdit(id){ editingId=(editingId===id)?null:id; render(); if(editingId)setTimeout(()=>{const el=document.getElementById('edit-desc-'+id);if(el)el.focus();},50); }
 
 function saveTx(id){
   const desc=document.getElementById('edit-desc-'+id).value.trim();
