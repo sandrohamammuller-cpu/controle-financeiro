@@ -29,38 +29,15 @@
       }
     }
     html { height:100%; }
-    body {
-      min-height:100%;
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;
-      display:flex; flex-direction:column; align-items:center;
-      margin:0; padding:0;
-    }
-    .app {
-      width:100%; max-width:var(--max);
-      min-height:100vh;
-      display:flex; flex-direction:column;
-    }
-    /* HEADER — contido dentro do .app, mesma largura */
-    .header {
-      background:var(--surface);
-      border-bottom:0.5px solid var(--border);
-      padding:16px 16px 12px;
-      position:sticky; top:0; z-index:10;
-      width:100%;
-    }
+    body { min-height:100%; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; display:flex; flex-direction:column; align-items:center; margin:0; padding:0; }
+    .app { width:100%; max-width:var(--max); min-height:100vh; display:flex; flex-direction:column; }
+    .header { background:var(--surface); border-bottom:0.5px solid var(--border); padding:16px 16px 12px; position:sticky; top:0; z-index:10; width:100%; }
     .app-title { font-size:13px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
     .month-nav { display:flex; align-items:center; gap:12px; }
-    .month-nav button {
-      background:none; border:0.5px solid var(--border2); border-radius:8px;
-      width:36px; height:36px; font-size:18px; cursor:pointer; color:var(--text);
-      display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    }
+    .month-nav button { background:none; border:0.5px solid var(--border2); border-radius:8px; width:36px; height:36px; font-size:18px; cursor:pointer; color:var(--text); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .month-nav button:active { opacity:0.6; }
     .month-label { flex:1; text-align:center; font-size:18px; font-weight:600; color:var(--text); }
-
     .content { flex:1; padding:16px; display:flex; flex-direction:column; gap:16px; }
-
     .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
     .metric { background:var(--surface); border-radius:var(--radius); padding:12px 10px; border:0.5px solid var(--border); }
     .metric-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
@@ -69,21 +46,12 @@
     .metric-value.expense { color:var(--expense); }
     .metric-value.pos { color:var(--income); }
     .metric-value.neg { color:var(--expense); }
-
     .card { background:var(--surface); border-radius:var(--radius-lg); border:0.5px solid var(--border); overflow:hidden; }
     .card-header { padding:12px 14px 0; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.05em; }
-
     .add-form { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
     .form-row { display:flex; gap:8px; align-items:stretch; }
-    .form-row input, .form-row select,
-    .add-form input, .add-form select {
-      flex:1; min-width:0; height:40px; border-radius:8px;
-      border:0.5px solid var(--border2); background:var(--surface2);
-      color:var(--text); padding:0 12px; font-size:15px;
-      font-family:inherit; -webkit-appearance:none; appearance:none; width:100%;
-    }
-    .form-row input:focus, .add-form input:focus,
-    .form-row select:focus, .add-form select:focus { outline:none; border-color:var(--blue); }
+    .form-row input, .form-row select, .add-form input, .add-form select { flex:1; min-width:0; height:40px; border-radius:8px; border:0.5px solid var(--border2); background:var(--surface2); color:var(--text); padding:0 12px; font-size:15px; font-family:inherit; -webkit-appearance:none; appearance:none; width:100%; }
+    .form-row input:focus, .add-form input:focus, .form-row select:focus, .add-form select:focus { outline:none; border-color:var(--blue); }
     input[type=number] { -moz-appearance:textfield; }
     input[type=number]::-webkit-inner-spin-button { display:none; }
     .input-day { width:72px; flex:none; text-align:center; padding:0 8px; }
@@ -93,19 +61,16 @@
     .btn-income:active { opacity:0.7; }
     .btn-expense { background:var(--expense-bg); color:var(--expense-dark); border:0.5px solid var(--expense-border); }
     .btn-expense:active { opacity:0.7; }
-
     .backup-card { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
     .backup-row { display:flex; gap:8px; }
     .btn-export, .btn-import { flex:1; height:40px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:6px; }
-    .btn-export { background:var(--surface2); border:0.5px solid var(--border2); color:var(--text2); }
+    .btn-export { background:var(--income-bg); border:0.5px solid var(--income-border); color:var(--income-dark); }
     .btn-export:active { opacity:0.7; }
     .btn-import { background:var(--blue-bg); border:0.5px solid var(--blue-border); color:var(--blue-dark); }
     .btn-import:active { opacity:0.7; }
     .backup-info { font-size:12px; color:var(--text3); text-align:center; line-height:1.5; }
-
     .toast { position:fixed; bottom:calc(24px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%) translateY(20px); background:#1a1a18; color:#f0efea; font-size:13px; padding:10px 20px; border-radius:20px; opacity:0; transition:opacity 0.2s,transform 0.2s; pointer-events:none; z-index:999; white-space:nowrap; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
     .chart-wrap { padding:10px 14px 14px; }
     .chart-tabs { display:flex; gap:6px; margin-bottom:12px; }
     .tab { background:none; border:0.5px solid var(--border2); border-radius:7px; padding:5px 14px; font-size:12px; cursor:pointer; color:var(--text2); font-family:inherit; }
@@ -117,7 +82,6 @@
     .cat-bar-fill { height:100%; border-radius:4px; transition:width 0.4s; }
     .cat-bar-val { font-size:12px; color:var(--text2); width:68px; text-align:right; flex-shrink:0; }
     .empty-chart { font-size:13px; color:var(--text3); padding:4px 0 2px; }
-
     .tx-item { border-top:0.5px solid var(--border); }
     .tx-item:first-child { border-top:none; }
     .tx-row { display:flex; align-items:center; gap:10px; padding:11px 14px; }
@@ -159,8 +123,8 @@
 
   <div class="content">
     <div class="metrics">
-      <div class="metric"><div class="metric-label">Ganhos</div><div class="metric-value income" id="totalIncome">R$ 0</div></div>
-      <div class="metric"><div class="metric-label">Gastos</div><div class="metric-value expense" id="totalExpense">R$ 0</div></div>
+      <div class="metric"><div class="metric-label">Entradas</div><div class="metric-value income" id="totalIncome">R$ 0</div></div>
+      <div class="metric"><div class="metric-label">Saídas</div><div class="metric-value expense" id="totalExpense">R$ 0</div></div>
       <div class="metric"><div class="metric-label">Saldo</div><div class="metric-value" id="totalBalance">R$ 0</div></div>
     </div>
 
@@ -176,7 +140,7 @@
           <option value="Salário">Salário</option>
           <option value="Freelance">Freelance</option>
           <option value="Investimento">Investimento</option>
-          <option value="Outros ganhos">Outros ganhos</option>
+          <option value="Outras entradas">Outras entradas</option>
           <option value="Alimentação">Alimentação</option>
           <option value="Moradia">Moradia</option>
           <option value="Transporte">Transporte</option>
@@ -184,11 +148,11 @@
           <option value="Lazer">Lazer</option>
           <option value="Educação">Educação</option>
           <option value="Assinaturas">Assinaturas</option>
-          <option value="Outros gastos">Outros gastos</option>
+          <option value="Outras saídas">Outras saídas</option>
         </select>
         <div class="btn-row">
-          <button class="btn-income" onclick="addTx('income')">+ Ganho</button>
-          <button class="btn-expense" onclick="addTx('expense')">+ Gasto</button>
+          <button class="btn-income" onclick="addTx('income')">+ Entrada</button>
+          <button class="btn-expense" onclick="addTx('expense')">+ Saída</button>
         </div>
       </div>
     </div>
@@ -197,11 +161,11 @@
       <div class="card-header">Backup dos dados</div>
       <div class="backup-card">
         <div class="backup-row">
-          <button class="btn-export" onclick="exportBackup()">⬇ Exportar backup</button>
-          <button class="btn-import" onclick="document.getElementById('importFile').click()">⬆ Importar backup</button>
+          <button class="btn-export" onclick="exportBackup()">📤 Compartilhar backup</button>
+          <button class="btn-import" onclick="document.getElementById('importFile').click()">📥 Importar backup</button>
         </div>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)" />
-        <p class="backup-info" id="backupInfo">Faça backup regularmente para não perder seus dados.</p>
+        <p class="backup-info" id="backupInfo">Compartilhe o backup por e-mail, WhatsApp ou Drive.</p>
       </div>
     </div>
 
@@ -209,8 +173,8 @@
       <div class="card-header" style="padding-bottom:0;">Por categoria</div>
       <div class="chart-wrap">
         <div class="chart-tabs">
-          <button class="tab active" onclick="setChartTab('expense',this)">Gastos</button>
-          <button class="tab" onclick="setChartTab('income',this)">Ganhos</button>
+          <button class="tab active" onclick="setChartTab('expense',this)">Saídas</button>
+          <button class="tab" onclick="setChartTab('income',this)">Entradas</button>
         </div>
         <div class="cat-bars" id="catBars"></div>
       </div>
@@ -228,8 +192,8 @@
 
 <script>
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const CATS=['Salário','Freelance','Investimento','Outros ganhos','Alimentação','Moradia','Transporte','Saúde','Lazer','Educação','Assinaturas','Outros gastos'];
-const CAT_COLORS={'Alimentação':'#1D9E75','Moradia':'#185FA5','Transporte':'#BA7517','Saúde':'#A32D2D','Lazer':'#993556','Educação':'#534AB7','Assinaturas':'#3B6D11','Outros gastos':'#5F5E5A','Salário':'#1D9E75','Freelance':'#185FA5','Investimento':'#BA7517','Outros ganhos':'#534AB7'};
+const CATS=['Salário','Freelance','Investimento','Outras entradas','Alimentação','Moradia','Transporte','Saúde','Lazer','Educação','Assinaturas','Outras saídas'];
+const CAT_COLORS={'Alimentação':'#1D9E75','Moradia':'#185FA5','Transporte':'#BA7517','Saúde':'#A32D2D','Lazer':'#993556','Educação':'#534AB7','Assinaturas':'#3B6D11','Outras saídas':'#5F5E5A','Salário':'#1D9E75','Freelance':'#185FA5','Investimento':'#BA7517','Outras entradas':'#534AB7'};
 const now=new Date();
 let curYear=now.getFullYear(), curMonth=now.getMonth();
 let allTx=JSON.parse(localStorage.getItem('fin_tx')||'[]');
@@ -241,27 +205,60 @@ function save(){ try{ localStorage.setItem('fin_tx',JSON.stringify(allTx)); }cat
 function fmt(n){ return 'R$\u00a0'+n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
 function updateBackupInfo(){
   const el=document.getElementById('backupInfo'); if(!el)return;
   const total=allTx.length;
   const lastBackup=localStorage.getItem('fin_last_backup');
-  if(lastBackup){ const d=new Date(parseInt(lastBackup)); el.textContent=`${total} transação(ões) salvas. Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`; }
-  else{ el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda.`:'Faça backup regularmente para não perder seus dados.'; }
+  if(lastBackup){
+    const d=new Date(parseInt(lastBackup));
+    el.textContent=`${total} transação(ões) salvas. Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`;
+  } else {
+    el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda.`:'Compartilhe o backup por e-mail, WhatsApp ou Drive.';
+  }
 }
 
 function exportBackup(){
   if(allTx.length===0){ showToast('Nenhuma transação para exportar.'); return; }
   const data={ version:1, exportedAt:new Date().toISOString(), transactions:allTx };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const json=JSON.stringify(data,null,2);
+  const dateStr=new Date().toISOString().slice(0,10);
+  const fileName=`financas-backup-${dateStr}.json`;
+
+  // Web Share API — abre painel nativo do Android (Gmail, WhatsApp, Drive, etc.)
+  if(navigator.share && navigator.canShare){
+    const blob=new Blob([json],{type:'application/json'});
+    const file=new File([blob],fileName,{type:'application/json'});
+    if(navigator.canShare({files:[file]})){
+      navigator.share({
+        title:'Backup Finanças',
+        text:`Backup do Controle Financeiro - ${dateStr}`,
+        files:[file]
+      }).then(()=>{
+        localStorage.setItem('fin_last_backup',Date.now().toString());
+        updateBackupInfo();
+        showToast('✓ Backup compartilhado!');
+      }).catch(err=>{
+        if(err.name!=='AbortError') downloadBackup(json,fileName);
+      });
+      return;
+    }
+  }
+  // Fallback para desktop: download direto
+  downloadBackup(json,fileName);
+}
+
+function downloadBackup(json,fileName){
+  const blob=new Blob([json],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download=`financas-backup-${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  a.href=url; a.download=fileName;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
   localStorage.setItem('fin_last_backup',Date.now().toString());
-  updateBackupInfo(); showToast('✓ Backup exportado com sucesso!');
+  updateBackupInfo();
+  showToast('✓ Backup exportado!');
 }
 
 function importBackup(event){
@@ -333,7 +330,7 @@ function render(){
 function renderList(txs){
   const el=document.getElementById('txList');
   const sorted=[...txs].sort((a,b)=>a.day-b.day||b.id-a.id);
-  if(!sorted.length){el.innerHTML='<div class="empty-state">Nenhuma transação neste mês.<br>Adicione ganhos ou gastos acima.</div>';return;}
+  if(!sorted.length){el.innerHTML='<div class="empty-state">Nenhuma transação neste mês.<br>Adicione entradas ou saídas acima.</div>';return;}
   el.innerHTML=sorted.map(t=>{
     const isEditing=editingId===t.id;
     const sign=t.type==='income'?'+':'−';
