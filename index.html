@@ -161,11 +161,11 @@
       <div class="card-header">Backup dos dados</div>
       <div class="backup-card">
         <div class="backup-row">
-          <button class="btn-export" onclick="exportBackup()">📤 Compartilhar backup</button>
+          <button class="btn-export" onclick="exportBackup()">✉️ Enviar por e-mail</button>
           <button class="btn-import" onclick="document.getElementById('importFile').click()">📥 Importar backup</button>
         </div>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importBackup(event)" />
-        <p class="backup-info" id="backupInfo">Compartilhe o backup por e-mail, WhatsApp ou Drive.</p>
+        <p class="backup-info" id="backupInfo">O e-mail será enviado para sandro.hamammuller@gmail.com</p>
       </div>
     </div>
 
@@ -194,6 +194,9 @@
 const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const CATS=['Salário','Freelance','Investimento','Outras entradas','Alimentação','Moradia','Transporte','Saúde','Lazer','Educação','Assinaturas','Outras saídas'];
 const CAT_COLORS={'Alimentação':'#1D9E75','Moradia':'#185FA5','Transporte':'#BA7517','Saúde':'#A32D2D','Lazer':'#993556','Educação':'#534AB7','Assinaturas':'#3B6D11','Outras saídas':'#5F5E5A','Salário':'#1D9E75','Freelance':'#185FA5','Investimento':'#BA7517','Outras entradas':'#534AB7'};
+
+const BACKUP_EMAIL = 'sandro.hamammuller@gmail.com';
+
 const now=new Date();
 let curYear=now.getFullYear(), curMonth=now.getMonth();
 let allTx=JSON.parse(localStorage.getItem('fin_tx')||'[]');
@@ -213,52 +216,53 @@ function updateBackupInfo(){
   const lastBackup=localStorage.getItem('fin_last_backup');
   if(lastBackup){
     const d=new Date(parseInt(lastBackup));
-    el.textContent=`${total} transação(ões) salvas. Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`;
+    el.textContent=`${total} transação(ões). Último backup: ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`;
   } else {
-    el.textContent=total>0?`${total} transação(ões) salvas. Nenhum backup feito ainda.`:'Compartilhe o backup por e-mail, WhatsApp ou Drive.';
+    el.textContent=`O e-mail será enviado para ${BACKUP_EMAIL}`;
   }
 }
 
 function exportBackup(){
-  if(allTx.length===0){ showToast('Nenhuma transação para exportar.'); return; }
-  const data={ version:1, exportedAt:new Date().toISOString(), transactions:allTx };
-  const json=JSON.stringify(data,null,2);
-  const dateStr=new Date().toISOString().slice(0,10);
-  const fileName=`financas-backup-${dateStr}.json`;
-
-  // Web Share API — abre painel nativo do Android (Gmail, WhatsApp, Drive, etc.)
-  if(navigator.share && navigator.canShare){
-    const blob=new Blob([json],{type:'application/json'});
-    const file=new File([blob],fileName,{type:'application/json'});
-    if(navigator.canShare({files:[file]})){
-      navigator.share({
-        title:'Backup Finanças',
-        text:`Backup do Controle Financeiro - ${dateStr}`,
-        files:[file]
-      }).then(()=>{
-        localStorage.setItem('fin_last_backup',Date.now().toString());
-        updateBackupInfo();
-        showToast('✓ Backup compartilhado!');
-      }).catch(err=>{
-        if(err.name!=='AbortError') downloadBackup(json,fileName);
-      });
-      return;
-    }
-  }
-  // Fallback para desktop: download direto
-  downloadBackup(json,fileName);
-}
-
-function downloadBackup(json,fileName){
-  const blob=new Blob([json],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download=fileName;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
+  if(allTx.length===0){ showToast('Nenhuma transação para enviar.'); return; }
+  const dateStr=new Date().toLocaleDateString('pt-BR');
+  const totalEntradas=allTx.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const totalSaidas=allTx.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  const saldo=totalEntradas-totalSaidas;
+  const porMes={};
+  allTx.forEach(t=>{
+    const chave=`${MONTHS[t.month]} ${t.year}`;
+    if(!porMes[chave]) porMes[chave]=[];
+    porMes[chave].push(t);
+  });
+  let corpo=`BACKUP - CONTROLE FINANCEIRO\n`;
+  corpo+=`Gerado em: ${dateStr}\n`;
+  corpo+=`Total de transações: ${allTx.length}\n\n`;
+  corpo+=`RESUMO GERAL\n`;
+  corpo+=`Entradas: ${fmt(totalEntradas)}\n`;
+  corpo+=`Saídas:   ${fmt(totalSaidas)}\n`;
+  corpo+=`Saldo:    ${fmt(saldo)}\n\n`;
+  corpo+=`${'─'.repeat(40)}\n\n`;
+  Object.keys(porMes).sort().forEach(mes=>{
+    const txs=porMes[mes].sort((a,b)=>a.day-b.day);
+    const entradas=txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const saidas=txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    corpo+=`${mes.toUpperCase()}\n`;
+    corpo+=`Entradas: ${fmt(entradas)} | Saídas: ${fmt(saidas)} | Saldo: ${fmt(entradas-saidas)}\n\n`;
+    txs.forEach(t=>{
+      const tipo=t.type==='income'?'(+)':'(-)';
+      corpo+=`  ${String(t.day).padStart(2,'0')} ${tipo} ${t.desc.padEnd(25,' ')} ${fmt(t.amount).padStart(12,' ')}  [${t.cat}]\n`;
+    });
+    corpo+=`\n`;
+  });
+  corpo+=`${'─'.repeat(40)}\n`;
+  corpo+=`Dados JSON para restauração:\n\n`;
+  corpo+=JSON.stringify({version:1,exportedAt:new Date().toISOString(),transactions:allTx},null,2);
+  const assunto=encodeURIComponent(`Backup Controle Financeiro - ${dateStr}`);
+  const corpoEncoded=encodeURIComponent(corpo);
+  window.location.href=`mailto:${BACKUP_EMAIL}?subject=${assunto}&body=${corpoEncoded}`;
   localStorage.setItem('fin_last_backup',Date.now().toString());
   updateBackupInfo();
-  showToast('✓ Backup exportado!');
+  showToast('✓ Abrindo e-mail...');
 }
 
 function importBackup(event){
